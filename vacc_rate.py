@@ -9,9 +9,19 @@ from datetime import datetime, timedelta
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
+# Change predict_from to set when you want the dotted line predictions to start from.
+# The date must be in the format YYYY-MM-DD.
+# If you select a date that is too early, the script will use the earliest valid date instead.
+predict_from = "2021-03-21"
+# Change av_period to set the number of days over which to average quantities.
+av_period = 14
+
+# ~~~~~ Shouldn't need to change anything below here ~~~~~
+
+datefmt = "%Y-%m-%d"
 today = datetime.today()
 day = timedelta(days=1)
-filename = "data_{}.csv".format(today.strftime("%Y-%b-%d"))
+filename = "data_{}.csv".format(today.strftime(datefmt))
 
 filters = [
     "areaName=United Kingdom",
@@ -23,9 +33,6 @@ structure = {
     "cumVaccinationSecondDoseUptakeByPublishDatePercentage": "cumVaccinationSecondDoseUptakeByPublishDatePercentage"
 }
 
-predict_from = "2021-03-25"
-av_period = 14
-datefmt = "%Y-%m-%d"
 
 def read_data(filename):
     try:
@@ -98,7 +105,10 @@ earliest_date = data["Date"][second_dose_delay]
 if old <= 0:
     print("Insufficient data to predict from this date.")
     print("Earliest valid date is {}.".format(earliest_date))
-    sys.exit()
+    line = second_dose_delay
+    date = data["Date"][line]
+    predictdate = data["Date"][0:line+1]
+    prediction_made = earliest_date
 predict0 = data["Zero"][0:line+1]
 predict1 = data["One"][0:line+1]
 predict2 = data["Two"][0:line+1]
