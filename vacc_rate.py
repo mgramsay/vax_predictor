@@ -1,6 +1,31 @@
 #! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+# Copyright (c) 2021 Martin Ramsay
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
-import sys
+"""
+A relatively basic model to predict how long the UK vaccine rollout will take.
+Uses Public Health England's Coronavirus Dashboard API to download the latest
+available vaccination data to make predictions.
+"""
+
 from uk_covid19 import Cov19API
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,6 +50,9 @@ day = timedelta(days=1)
 filename = "data_{}.csv".format(today.strftime(datefmt))
 
 def read_data(filename):
+    # Read and repackage the csv data for processing.
+    # If the file doesn't exist, download the latest results from the
+    # government website.
     try:
         # If this script has already been run today, use the existing data
         data = pd.read_csv(filename)
