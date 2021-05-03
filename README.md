@@ -30,3 +30,6 @@ The following assumptions are made when generating predictions:
 
 ## Known problems
 The prediction does not account for drops in vaccination rate due to bank holidays and weekends. The latter is somewhat accounted for by the 14 day averaging. However, bank holidays will introduce errors (for example the inability to account for Easter in the dotted line predictions).
+
+# Acknowledgements
+The ability to automate getting the latest vaccination data would not have been possible without the Coronavirus Dashboard API developed and maintained by Public Health England, https://publichealthengland.github.io/coronavirus-dashboard-api-python-sdk/
