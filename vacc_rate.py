@@ -221,6 +221,9 @@ if old <= 0:
     predictdate = data["Date"][0:line+1]
     prediction_made = earliest_date
 
+# Co-ordinates for a line to be used later to mark where the prediction starts
+line_x = [data["Date"][line], data["Date"][line]]
+line_y = [0.0, 100.0]
 predictdate, predict0, predict1, predict2, predictdose, predict_end = make_prediction(line, data, doses)
 # Now predict how long it will take to reach 100% based on all available data.
 # This is purely for comparison. The proper prediction, with a break down of
@@ -237,18 +240,25 @@ revisedate, revise0, revise1, revise2, revisedose, revised_end = make_prediction
 # Generate plots of the data
 fig = plt.figure()
 ax = fig.gca()
+
+# Draw a line to mark where the first prediction starts
+ax.plot(line_x, line_y, linestyle=":", color="purple", linewidth=1)
+# Plot the original predictions
 ax.plot(predictdate, predict0, linestyle=":", color="indianred")
 ax.plot(predictdate, predict1, linestyle=":", color="royalblue")
 ax.plot(predictdate, predict2, linestyle=":", color="grey")
 ax.plot(predictdate, predictdose, linestyle=":", color="lightgreen")
+# Plot the revised predictions
 ax.plot(revisedate, revise0, linestyle="--", color="indianred")
 ax.plot(revisedate, revise1, linestyle="--", color="royalblue")
 ax.plot(revisedate, revise2, linestyle="--", color="grey")
 ax.plot(revisedate, revisedose, linestyle="--", color="lightgreen")
+# Plot the data so far
 ax.plot(data["Date"], data["Zero"], linestyle="-", color="red", label="People unvaccinated")
 ax.plot(data["Date"], data["One"], linestyle="-", color="blue", label="People half-vaccinated")
 ax.plot(data["Date"], data["Two"], linestyle="-", color="black", label="People fully vaccinated")
 ax.plot(data["Date"], doses, linestyle="-", color="green", label="Vaccine doses administered")
+
 ax.set_ylim(0.0, 100.0)
 ax.set_xlabel("Time")
 ax.set_ylabel("Percentage")
