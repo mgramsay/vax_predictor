@@ -194,12 +194,22 @@ ref_date = data["Date"][0]
 for idate, date in enumerate(data["Date"]):
     if data["One"][idate] > data["Two"][-1]:
         ref_date = date
+        got_ref_date = True
         break
 second_dose_delay = (data["Date"][-1] - ref_date).days
 # Once the number of people with two doses exceeds the peak in the 1st dose
-# data, the above method won't work. To try to manage this, set an upper limit
-# of 12 weeks delay (the current maximum recommended gap between doses).
-second_dose_delay = min(second_dose_delay, 84)
+# data, the above method won't work. When that happens, use the delay from
+# the last available date that the above method would have worked
+# (i.e. whenever the 2nd dose numbers reaches the 1st dose peak)
+if not got_ref_date:
+    two_dose_date = data["Date"][-1]
+    one_dose_peak = max(data["One"])
+    for idate, date in enumerate(reversed(data["Date"])):
+        two_dose = data["Two"][-idate-1]
+        if two_dose < one_dose_peak:
+            two_dose_date = date
+            break
+    second_dose_delay = (two_dose_date - ref_date).days
 
 # Find the requested prediction date in the data.
 prediction_made = datetime.strptime(predict_from, datefmt).date()
