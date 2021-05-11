@@ -188,48 +188,37 @@ for ival, val in enumerate(data["One"]):
 doses_given = fractions[0] + 0.5 * fractions[1]
 print("Percentage of doses administered: {:0.1f}%".format(doses_given))
 
-# Calculate the delay between first and second doses
-got_ref_date = False
-ref_date = data["Date"][0]
-for idate, date in enumerate(data["Date"]):
-    if data["One"][idate] > data["Two"][-1]:
-        ref_date = date
-        got_ref_date = True
-        break
-second_dose_delay = (data["Date"][-1] - ref_date).days
-# Once the number of people with two doses exceeds the peak in the 1st dose
-# data, the above method won't work. When that happens, use the delay from
-# the last available date that the above method would have worked
-# (i.e. whenever the 2nd dose numbers reaches the 1st dose peak)
-if not got_ref_date:
-    two_dose_date = data["Date"][-1]
-    one_dose_peak = max(data["One"])
-    for idate, date in enumerate(reversed(data["Date"])):
-        two_dose = data["Two"][-idate-1]
-        if two_dose < one_dose_peak:
-            two_dose_date = date
-            break
-    second_dose_delay = (two_dose_date - ref_date).days
-
 # Find the requested prediction date in the data.
 prediction_made = datetime.strptime(predict_from, datefmt).date()
 for idate, date in enumerate(data["Date"]):
     if date == prediction_made:
         line = idate
         break
+
+# Calculate the delay between first and second doses
+got_ref_date = False
+ref_date = data["Date"][0]
+
 # Check that there is enough historical data for the requested date.
 # If not, start the prediction from the earliest possible date.
-date = data["Date"][line]
-predictdate = data["Date"][0:line+1]
-old = len(predictdate) - second_dose_delay
-earliest_date = data["Date"][second_dose_delay]
-if old <= 0:
+if 100.0 - data["Zero"][0] > data["Two"][line]:
+    for idate, date in enumerate(data["Date"]):
+        if 100.0 - data["Zero"][0] < data["Two"][idate]:
+            earliest_date = date
+            line = idate
+            break
     print("Insufficient data to predict from this date.")
     print("Earliest valid date is {}.".format(earliest_date))
-    line = second_dose_delay
-    date = data["Date"][line]
-    predictdate = data["Date"][0:line+1]
     prediction_made = earliest_date
+else:
+    for idate, date in enumerate(data["Date"]):
+        if 100.0 - data["Zero"][idate] > data["Two"][line]:
+            ref_date = date
+            break
+second_dose_delay = (data["Date"][line] - ref_date).days
+
+date = data["Date"][line]
+predictdate = data["Date"][0:line+1]
 
 # Co-ordinates for a line to be used later to mark where the prediction starts
 line_x = [data["Date"][line], data["Date"][line]]
@@ -245,6 +234,13 @@ print("Based on data up to {}, predicted end date: {}".format(prediction_made, p
 print("Revised estimate based on {} days up to {}: {}".format(av_period, data["Date"][-1], revised_end))
 
 # Now let's make another prediction properly, using all of the available data.
+# Calculate updated delay between first and second doses
+ref_date = data["Date"][0]
+for idate, date in enumerate(data["Date"]):
+    if 100.0 - data["Zero"][idate] > data["Two"][-1]:
+        ref_date = date
+        break
+second_dose_delay = (data["Date"][-1] - ref_date).days
 revisedate, revise0, revise1, revise2, revisedose, revised_end = make_prediction(-1, data, doses)
 
 # Generate plots of the data
