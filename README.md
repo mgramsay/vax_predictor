@@ -13,12 +13,9 @@ Requires Python 3.7+ with the following modules:
 Simply run the `vacc_rate.py` script.
 
 ## Results
-The script will generate three `png` files:
-* `vax_frac.png` - Pie chart showing the proportions of the estimated UK adult population which are currently unvaccinated, have received only one dose (half-vaccinated), or have received both vaccine doses (fully vaccinated).
-* `vax_per_day.png` - Plot of the percentage of first, second and all doses which have been administered on each day. To reduce the noise, the values have been averaged over the preceding two weeks.
-* `vax_rates.png` - Plot of the percentage of the estimated UK adult population who fall into each of the three categories (unvaccinated, half-vaccinated, fully vaccinated) as a function of time.
+The script generates a `png` file containing a plot of the percentage of the estimated UK adult population who are unvaccinated, have received a single dose (half-vaccinated), or have received both doses (fully vaccinated) as a function of time.
 
-In the last two plots, solid lines denote the values to date. The dotted lines show the earliest possible predictions (as of 01/05/2021, this is 25/03/2021). Dashed lines mark revised predictions based on the full set of available data. The method used to generate predictions is discussed below.
+Solid lines denote the values to date. The dotted lines show the predictions made using data up to the date set via the `predict_from` variable (currently set to 24th April 2021 - the date the script was first written). A vertical purple dashed line marks this date. Dashed lines mark revised predictions based on the full set of available data. The method used to generate predictions is discussed below.
 
 The script also saves the government data it downloads to save having to re-download it if the user decides to modify and re-run the script.
 
